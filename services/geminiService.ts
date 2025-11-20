@@ -1,33 +1,40 @@
 /**
- * Audio Service (Formerly Gemini Service)
- * Now uses browser native SpeechSynthesis API to remove API Key dependency.
+ * Audio Service
+ * Uses browser native SpeechSynthesis API.
  */
 
-// Helper function to get the best available voice
-const getBestVoice = (): SpeechSynthesisVoice | null => {
+// Helper function to get the best available voice for a specific accent
+const getBestVoice = (accent: 'US' | 'UK'): SpeechSynthesisVoice | null => {
   const voices = window.speechSynthesis.getVoices();
   
-  // Priority list for voices that sound decent for tech terms
-  const preferred = [
-    // Google voices usually sound better than system defaults
-    voices.find(v => v.name === "Google US English"),
-    voices.find(v => v.name === "Google UK English Male"),
-    // Microsoft voices on Windows
-    voices.find(v => v.name.includes("Microsoft Zira")), 
-    voices.find(v => v.name.includes("Microsoft David")),
-    // Apple voices
-    voices.find(v => v.name === "Samantha"),
-    // Fallback to any English voice
-    voices.find(v => v.lang.startsWith('en-US')),
-    voices.find(v => v.lang.startsWith('en'))
-  ];
+  // Filter logic
+  const isUS = accent === 'US';
+  const preferredLocales = isUS ? ['en-US', 'en_US'] : ['en-GB', 'en_GB'];
+  const fallbackLocales = isUS ? ['en-GB', 'en_GB'] : ['en-US', 'en_US'];
 
-  return preferred.find(v => v !== undefined) || null;
+  // 1. Try finding Google/Premium voices for specific locale
+  let voice = voices.find(v => 
+    preferredLocales.some(loc => v.lang === loc) && 
+    (v.name.includes("Google") || v.name.includes("Premium") || v.name.includes("Enhanced"))
+  );
+
+  // 2. Try any voice for specific locale
+  if (!voice) {
+    voice = voices.find(v => preferredLocales.some(loc => v.lang === loc));
+  }
+
+  // 3. Fallback to other English
+  if (!voice) {
+    voice = voices.find(v => fallbackLocales.some(loc => v.lang === loc));
+  }
+
+  // 4. Absolute fallback
+  return voice || voices.find(v => v.lang.startsWith('en')) || null;
 };
 
 export const playPronunciation = async (
   text: string,
-  context: string = "programming"
+  accent: 'US' | 'UK' = 'US'
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (!window.speechSynthesis) {
@@ -39,26 +46,28 @@ export const playPronunciation = async (
     // Cancel any currently playing speech
     window.speechSynthesis.cancel();
 
-    // Pre-processing text to help the dumb browser TTS pronounce C++ better
+    // Pre-processing text for better C++ pronunciation
     let speakText = text;
     
-    // Special handling for C++ specific terms where browser TTS fails
     if (text.includes("std::cout")) speakText = speakText.replace("std::cout", "standard see out");
-    if (text.includes("cout")) speakText = speakText.replace("cout", "see out");
-    if (text.toLowerCase() === "char") speakText = "care"; // Force 'care' pronunciation for char
+    else if (text.includes("cout")) speakText = speakText.replace("cout", "see out");
+    
+    if (text.toLowerCase() === "char") speakText = "care"; 
     if (text.toLowerCase() === "deque") speakText = "deck";
     if (text.includes("std::")) speakText = speakText.replace(/std::/g, "standard ");
     
     const utterance = new SpeechSynthesisUtterance(speakText);
     
     // Configuration
-    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
     
-    const voice = getBestVoice();
+    const voice = getBestVoice(accent);
     if (voice) {
       utterance.voice = voice;
+      // Adjust rate for some voices if needed
+      if (voice.name.includes("Google")) utterance.rate = 0.85;
     }
 
     utterance.onend = () => {
@@ -70,10 +79,10 @@ export const playPronunciation = async (
       reject(e);
     };
 
-    // Small delay to ensure voices are loaded (common browser bug)
+    // Small delay to ensure voices are loaded
     if (window.speechSynthesis.getVoices().length === 0) {
        window.speechSynthesis.onvoiceschanged = () => {
-           const v = getBestVoice();
+           const v = getBestVoice(accent);
            if(v) utterance.voice = v;
            window.speechSynthesis.speak(utterance);
        };
@@ -83,10 +92,7 @@ export const playPronunciation = async (
   });
 };
 
-// Mocking the explanation generation since we now use static data
-// Keeping the function signature to avoid breaking the UI component logic immediately
 export const generateExplanation = async (term: string): Promise<string> => {
-  // Simulate network delay for the "cool" loading effect
   await new Promise(resolve => setTimeout(resolve, 800));
   return "EXPLANATION_LOADED_FROM_LOCAL_DB";
 };

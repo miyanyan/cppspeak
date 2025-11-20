@@ -1,7 +1,9 @@
 export interface Term {
   id: string;
   word: string;
-  ipa?: string; // International Phonetic Alphabet
+  ipa?: string; // Legacy generic IPA
+  ipaUS?: string; // American Pronunciation
+  ipaUK?: string; // British Pronunciation
   simplePhonetic: string; // Simple English phonetic (e.g., "See-Out")
   category: TermCategory;
   description: string; // Short description

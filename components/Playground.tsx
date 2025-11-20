@@ -9,7 +9,8 @@ const Playground: React.FC = () => {
     if (!text.trim()) return;
     setLoading(true);
     try {
-      await playPronunciation(text, "code_snippet");
+      // Default to US accent for code snippets
+      await playPronunciation(text, 'US');
     } catch (error) {
       console.error(error);
     } finally {

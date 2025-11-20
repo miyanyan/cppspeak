@@ -14,7 +14,6 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
 
   useEffect(() => {
     if (term) {
-      // Simulate a "decoding" effect purely for aesthetics
       setLoading(true);
       const timer = setTimeout(() => {
         setLoading(false);
@@ -27,7 +26,8 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
     if(audioLoading || !term) return;
     setAudioLoading(true);
     try {
-        await playPronunciation(term.word);
+        // Default to US accent for modal currently
+        await playPronunciation(term.word, 'US');
     } catch(e) {
         console.error(e);
     } finally {
