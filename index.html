@@ -9,7 +9,7 @@
     <style>
       body {
         font-family: 'Inter', 'Noto Sans SC', sans-serif;
-        background-color: #020617; /* Slate 950 */
+        background-color: #000205; /* Ultra Dark */
         color: #e2e8f0;
         overflow-x: hidden;
       }
@@ -20,30 +20,108 @@
       /* Premium Scrollbar */
       ::-webkit-scrollbar {
         width: 6px;
-        height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent; 
+        background: #0f172a; 
       }
       ::-webkit-scrollbar-thumb {
         background: #334155; 
         border-radius: 3px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #475569; 
+        background: #3b82f6; 
       }
 
-      /* Subtle noise texture overlay */
-      .bg-noise {
-        position: fixed;
+      /* Audio Wave Animation */
+      .audio-bar {
+        animation: wave 1s ease-in-out infinite;
+        background: #38bdf8;
+        width: 3px;
+        border-radius: 99px;
+      }
+      .audio-bar:nth-child(1) { animation-delay: 0.0s; height: 40%; }
+      .audio-bar:nth-child(2) { animation-delay: 0.1s; height: 80%; }
+      .audio-bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+      .audio-bar:nth-child(4) { animation-delay: 0.3s; height: 90%; }
+
+      @keyframes wave {
+        0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+        50% { transform: scaleY(1.2); opacity: 1; box-shadow: 0 0 8px #38bdf8; }
+      }
+
+      /* Glitch Effect for Title */
+      .glitch-wrapper {
+        position: relative;
+      }
+      .glitch-text::before,
+      .glitch-text::after {
+        content: attr(data-text);
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        opacity: 0.03;
+        background: #000205;
+      }
+      .glitch-text::before {
+        left: 2px;
+        text-shadow: -1px 0 #ff00c1;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .glitch-text::after {
+        left: -2px;
+        text-shadow: -1px 0 #00fff9;
+        clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+
+      @keyframes glitch-anim {
+        0% { clip: rect(30px, 9999px, 10px, 0); }
+        5% { clip: rect(80px, 9999px, 90px, 0); }
+        10% { clip: rect(20px, 9999px, 60px, 0); }
+        15% { clip: rect(0, 0, 0, 0); }
+        100% { clip: rect(0, 0, 0, 0); }
+      }
+      @keyframes glitch-anim2 {
+        0% { clip: rect(10px, 9999px, 80px, 0); }
+        5% { clip: rect(50px, 9999px, 20px, 0); }
+        10% { clip: rect(90px, 9999px, 100px, 0); }
+        15% { clip: rect(0, 0, 0, 0); }
+        100% { clip: rect(0, 0, 0, 0); }
+      }
+
+      /* Moving Cyber Grid */
+      .perspective-grid {
+        position: absolute;
+        width: 200%;
+        height: 130%;
+        background-image: 
+          linear-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(56, 189, 248, 0.15) 1px, transparent 1px);
+        background-size: 60px 60px;
+        transform-origin: top center;
+        transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+        animation: grid-move 20s linear infinite;
+        mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 60%, transparent 100%);
+      }
+
+      @keyframes grid-move {
+        0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+        100% { transform: perspective(500px) rotateX(60deg) translateY(60px) translateZ(-200px); }
+      }
+
+      /* Scanline overlay for terminals */
+      .scanlines {
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0),
+          rgba(255,255,255,0) 50%,
+          rgba(0,0,0,0.2) 50%,
+          rgba(0,0,0,0.2)
+        );
+        background-size: 100% 4px;
         pointer-events: none;
-        z-index: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
     </style>
   <script type="importmap">
@@ -61,7 +139,6 @@
 </script>
 </head>
   <body class="antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
-    <div class="bg-noise"></div>
     <div id="root" class="relative z-10"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
