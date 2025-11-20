@@ -4,8 +4,11 @@ export interface Term {
   ipa?: string; // International Phonetic Alphabet
   simplePhonetic: string; // Simple English phonetic (e.g., "See-Out")
   category: TermCategory;
-  description: string;
+  description: string; // Short description
   commonError: string; // How people usually get it wrong
+  // New fields to replace AI generation
+  detailedExplanation: string; 
+  codeSnippet: string;
 }
 
 export enum TermCategory {

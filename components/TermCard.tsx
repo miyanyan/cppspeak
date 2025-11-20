@@ -122,6 +122,15 @@ const TermCard: React.FC<TermCardProps> = ({ term, onSelect }) => {
                   {term.commonError}
               </span>
             </div>
+
+            {term.ipa && (
+              <div className="flex items-center gap-3 p-2 rounded-lg bg-blue-500/5 border border-blue-500/10">
+                <span className="text-[10px] text-blue-500 font-bold uppercase tracking-wider min-w-[40px]">IPA</span>
+                <span className="text-blue-300 font-sans text-lg font-medium tracking-wide">
+                  /{term.ipa}/
+                </span>
+              </div>
+            )}
           </div>
           
           <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">

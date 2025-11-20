@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Term } from '../types';
-import { generateExplanation, playPronunciation } from '../services/geminiService';
+import { playPronunciation } from '../services/geminiService';
 
 interface ExplanationModalProps {
   term: Term | null;
@@ -8,20 +8,18 @@ interface ExplanationModalProps {
 }
 
 const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) => {
-  const [explanation, setExplanation] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (term) {
+      // Simulate a "decoding" effect purely for aesthetics
       setLoading(true);
-      generateExplanation(term.word)
-        .then(setExplanation)
-        .catch(() => setExplanation("无法加载解释。"))
-        .finally(() => setLoading(false));
-    } else {
-      setExplanation('');
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 600);
+      return () => clearTimeout(timer);
     }
   }, [term]);
 
@@ -66,6 +64,9 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
                    <div className="text-[10px] font-code font-bold text-cyan-500 uppercase tracking-widest px-2 py-0.5 bg-cyan-950 rounded border border-cyan-900">
                       DATA_ID: {term.id}
                    </div>
+                   <div className="text-[10px] font-code font-bold text-emerald-500 uppercase tracking-widest px-2 py-0.5 bg-emerald-950 rounded border border-emerald-900">
+                      LOCAL_DB_ACCESS
+                   </div>
                 </div>
                 <div className="flex items-center gap-4 mt-1">
                     <h2 className="text-4xl md:text-5xl font-code font-bold text-white tracking-tight">{term.word}</h2>
@@ -73,7 +74,7 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
                         onClick={handlePlay}
                         className="bg-cyan-600 hover:bg-cyan-500 text-white p-3 rounded-full transition-all shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:scale-105 active:scale-95"
                         disabled={audioLoading}
-                        title="播放标准发音"
+                        title="播放发音"
                     >
                         {audioLoading ? (
                             <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -139,35 +140,30 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
               </div>
               <div className="h-4 bg-slate-800/50 rounded w-3/4 animate-pulse"></div>
               <div className="h-4 bg-slate-800/50 rounded w-full animate-pulse"></div>
-              <div className="h-4 bg-slate-800/50 rounded w-5/6 animate-pulse"></div>
               <div className="h-32 bg-[#0b1120] border border-slate-800/50 rounded-lg w-full mt-6 animate-pulse"></div>
             </div>
           ) : (
             <div className="prose prose-invert prose-p:text-slate-300 prose-headings:text-white max-w-none">
                 <div className="text-slate-300 whitespace-pre-wrap font-sans text-lg leading-relaxed">
-                     {explanation.split('```').map((part, index) => {
-                        if (index % 2 === 1) {
-                            // Code block style
-                            return (
-                                <div key={index} className="relative group my-8">
-                                    <div className="absolute -inset-[1px] bg-gradient-to-r from-cyan-600/30 to-purple-600/30 rounded-lg blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
-                                    <pre className="relative bg-[#080d19] p-6 rounded-lg border border-white/10 font-code text-sm text-cyan-100 overflow-x-auto shadow-inner">
-                                        <div className="absolute top-2 right-3 text-[10px] text-slate-600 font-code uppercase">C++ Snippet</div>
-                                        <code>{part.replace(/^cpp\n/, '').replace(/^c\+\+\n/, '')}</code>
-                                    </pre>
-                                </div>
-                            );
-                        }
-                        return <p key={index} className="mb-4">{part}</p>;
-                     })}
+                     <p className="mb-4">{term.detailedExplanation}</p>
+                     
+                     {term.codeSnippet && (
+                        <div className="relative group my-8">
+                            <div className="absolute -inset-[1px] bg-gradient-to-r from-cyan-600/30 to-purple-600/30 rounded-lg blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+                            <pre className="relative bg-[#080d19] p-6 rounded-lg border border-white/10 font-code text-sm text-cyan-100 overflow-x-auto shadow-inner">
+                                <div className="absolute top-2 right-3 text-[10px] text-slate-600 font-code uppercase">C++ Snippet</div>
+                                <code>{term.codeSnippet}</code>
+                            </pre>
+                        </div>
+                     )}
                 </div>
             </div>
           )}
         </div>
         
         <div className="p-3 bg-[#0b1120] border-t border-white/5 text-[10px] text-slate-600 text-center font-code flex justify-between px-8 uppercase tracking-widest">
-            <span>Secure Connection</span>
-            <span>AI Analysis Complete</span>
+            <span>Offline Mode</span>
+            <span>Verified Data</span>
         </div>
       </div>
     </div>

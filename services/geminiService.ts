@@ -1,122 +1,92 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+/**
+ * Audio Service (Formerly Gemini Service)
+ * Now uses browser native SpeechSynthesis API to remove API Key dependency.
+ */
 
-const getClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper function to get the best available voice
+const getBestVoice = (): SpeechSynthesisVoice | null => {
+  const voices = window.speechSynthesis.getVoices();
+  
+  // Priority list for voices that sound decent for tech terms
+  const preferred = [
+    // Google voices usually sound better than system defaults
+    voices.find(v => v.name === "Google US English"),
+    voices.find(v => v.name === "Google UK English Male"),
+    // Microsoft voices on Windows
+    voices.find(v => v.name.includes("Microsoft Zira")), 
+    voices.find(v => v.name.includes("Microsoft David")),
+    // Apple voices
+    voices.find(v => v.name === "Samantha"),
+    // Fallback to any English voice
+    voices.find(v => v.lang.startsWith('en-US')),
+    voices.find(v => v.lang.startsWith('en'))
+  ];
 
-// Helper to decode base64 audio
-function decode(base64: string) {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function decodeAudioData(
-  data: Uint8Array,
-  ctx: AudioContext,
-  sampleRate: number,
-  numChannels: number,
-): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
-  const frameCount = dataInt16.length / numChannels;
-  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
-
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
-    }
-  }
-  return buffer;
-}
+  return preferred.find(v => v !== undefined) || null;
+};
 
 export const playPronunciation = async (
   text: string,
   context: string = "programming"
 ): Promise<void> => {
-  const ai = getClient();
-
-  // Prompt specifically designed for clear US English technical pronunciation
-  const prompt = `
-    Task: You are a native US English speaker and an expert C++ engineer. 
-    Action: Pronounce the following term or code snippet clearly, naturally, and authoritatively.
-    Term: "${text}"
-    Rules: 
-    1. Do NOT explain anything. ONLY speak the term.
-    2. Use standard US developer pronunciation (e.g., 'char' is 'care', 'deque' is 'deck', 'null' is 'nuhl').
-    3. If it is 'std::cout', pronounce it as 'standard see out' or 'see out'.
-    4. Speak at a moderate, teaching pace.
-  `;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: prompt }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Fenrir' }, // Deep, authoritative voice
-          },
-        },
-      },
-    });
-
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    
-    if (!base64Audio) {
-      throw new Error("No audio data received from Gemini.");
+  return new Promise((resolve, reject) => {
+    if (!window.speechSynthesis) {
+      console.error("Browser does not support speech synthesis");
+      reject("Browser not supported");
+      return;
     }
 
-    const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-    const outputAudioContext = new AudioContextClass({ sampleRate: 24000 });
-    const outputNode = outputAudioContext.createGain();
-    outputNode.connect(outputAudioContext.destination);
+    // Cancel any currently playing speech
+    window.speechSynthesis.cancel();
 
-    const audioBuffer = await decodeAudioData(
-      decode(base64Audio),
-      outputAudioContext,
-      24000,
-      1,
-    );
-
-    const source = outputAudioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(outputNode);
-    source.start();
+    // Pre-processing text to help the dumb browser TTS pronounce C++ better
+    let speakText = text;
     
-    await new Promise<void>((resolve) => {
-        source.onended = () => {
-            outputAudioContext.close();
-            resolve();
-        };
-    });
+    // Special handling for C++ specific terms where browser TTS fails
+    if (text.includes("std::cout")) speakText = speakText.replace("std::cout", "standard see out");
+    if (text.includes("cout")) speakText = speakText.replace("cout", "see out");
+    if (text.toLowerCase() === "char") speakText = "care"; // Force 'care' pronunciation for char
+    if (text.toLowerCase() === "deque") speakText = "deck";
+    if (text.includes("std::")) speakText = speakText.replace(/std::/g, "standard ");
+    
+    const utterance = new SpeechSynthesisUtterance(speakText);
+    
+    // Configuration
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    const voice = getBestVoice();
+    if (voice) {
+      utterance.voice = voice;
+    }
 
-  } catch (error) {
-    console.error("Error generating pronunciation:", error);
-    throw error;
-  }
+    utterance.onend = () => {
+      resolve();
+    };
+
+    utterance.onerror = (e) => {
+      console.error("Speech synthesis error", e);
+      reject(e);
+    };
+
+    // Small delay to ensure voices are loaded (common browser bug)
+    if (window.speechSynthesis.getVoices().length === 0) {
+       window.speechSynthesis.onvoiceschanged = () => {
+           const v = getBestVoice();
+           if(v) utterance.voice = v;
+           window.speechSynthesis.speak(utterance);
+       };
+    } else {
+       window.speechSynthesis.speak(utterance);
+    }
+  });
 };
 
+// Mocking the explanation generation since we now use static data
+// Keeping the function signature to avoid breaking the UI component logic immediately
 export const generateExplanation = async (term: string): Promise<string> => {
-  const ai = getClient();
-  
-  // Updated prompt to request Chinese explanation
-  const prompt = `
-    请用**中文**解释 C++ 术语 "${term}"。
-    要求：
-    1. 简要说明它是什么 (1-2句话)。
-    2. 解释为什么这个词容易读错（如果相关，可以提一下词源），指出中文母语者常见的发音误区。
-    3. 提供一个非常简短的代码示例（2-3行）。
-    输出格式为 Markdown。总字数控制在 150 字以内。
-  `;
-
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
-
-  return response.text || "无法生成解释。";
+  // Simulate network delay for the "cool" loading effect
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return "EXPLANATION_LOADED_FROM_LOCAL_DB";
 };
