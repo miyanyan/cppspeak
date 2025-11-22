@@ -57,7 +57,7 @@ const App: React.FC = () => {
          {/* Top Gradient fade */}
          <div className="absolute inset-0 bg-gradient-to-b from-[#000205] via-transparent to-[#000205] z-10"></div>
          {/* Moving Grid */}
-         <div className="perspective-grid opacity-30"></div>
+         <div className="perspective-grid opacity-40"></div>
          {/* Glow Orbs */}
          <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
          <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/10 rounded-full blur-[120px] mix-blend-screen"></div>
@@ -82,16 +82,16 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="flex-grow relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="flex-grow relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
         
         {/* Hero Section - Condensed */}
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-12 relative">
             <div className="inline-flex items-center px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 text-[10px] font-medium mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.2)] animate-fade-in-up">
                 <span className="relative flex h-1.5 w-1.5 mr-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
                 </span>
-                SYSTEM: ONLINE
+                DATABASE: {CPP_TERMS.length} TERMS ACTIVE
             </div>
             
             <h2 className="glitch-wrapper text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
