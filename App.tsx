@@ -96,7 +96,7 @@ const App: React.FC = () => {
             
             <h2 className="glitch-wrapper text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
                 <span className="block mb-1 text-slate-500 text-2xl sm:text-3xl font-light tracking-normal">Stop saying</span>
-                <span className="glitch-text text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400" data-text="APP (A-P-P)">APP (A-P-P)</span>
+                <span className="glitch-text text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400" data-text="Deque (Di-Q)">Deque (Di-Q)</span>
             </h2>
             
             <p className="text-base text-slate-400 max-w-xl mx-auto leading-relaxed font-light">
