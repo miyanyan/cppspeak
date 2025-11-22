@@ -1,6 +1,8 @@
 /**
  * Audio Service
- * Uses Youdao Dictionary TTS API for faster response times compared to browser native speech synthesis.
+ * Hybrid approach:
+ * 1. Youdao Dictionary TTS API for single words (High quality, natural voice).
+ * 2. Browser Native SpeechSynthesis for sentences/code or fallback.
  */
 
 let currentAudio: HTMLAudioElement | null = null;
@@ -9,52 +11,74 @@ export const playPronunciation = async (
   text: string,
   accent: 'US' | 'UK' = 'US'
 ): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    // Pre-processing text for better C++ pronunciation
-    let speakText = text;
-    
-    // Specific fixups for C++ terms to ensure phonetic correctness
-    if (text.includes("std::cout")) speakText = speakText.replace("std::cout", "standard see out");
-    else if (text.includes("cout")) speakText = speakText.replace("cout", "see out");
-    
-    if (text.toLowerCase() === "char") speakText = "care"; 
-    if (text.toLowerCase() === "deque") speakText = "deck";
-    if (text.includes("std::")) speakText = speakText.replace(/std::/g, "standard ");
-    
-    // Stop any currently playing audio to prevent overlap
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    }
+  // Cancel any ongoing browser speech
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+  // Stop any ongoing audio element
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
 
-    // Construct Youdao API URL
-    // type=1: UK (English), type=2: US (American)
+  // DIRECT STRATEGY:
+  // 1. If text contains spaces, treat it as a sentence or code snippet -> Use Browser Native (More reliable for context).
+  // 2. If text is a single block (like "App" or "std::deque"), try Youdao first.
+  // 3. If Youdao fails (e.g. due to special characters like "::" or network), fallback to Browser.
+  
+  const isSentenceOrCode = text.trim().includes(' ');
+
+  if (isSentenceOrCode) {
+    return speakWithBrowser(text);
+  } else {
+    try {
+      await speakWithYoudao(text, accent);
+    } catch (e) {
+      console.warn("Youdao API failed or rejected format, falling back to browser TTS", e);
+      await speakWithBrowser(text);
+    }
+  }
+};
+
+const speakWithYoudao = (text: string, accent: 'US' | 'UK'): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    // type=1: UK, type=2: US
     const type = accent === 'US' ? 2 : 1;
-    const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(speakText)}&type=${type}`;
+    const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=${type}`;
 
     const audio = new Audio(url);
     currentAudio = audio;
 
     audio.onended = () => {
       resolve();
-      if (currentAudio === audio) {
-        currentAudio = null;
-      }
+      if (currentAudio === audio) currentAudio = null;
     };
 
     audio.onerror = (e) => {
-      console.error("Youdao TTS playback error", e);
-      reject(new Error("Failed to play audio"));
-      if (currentAudio === audio) {
-        currentAudio = null;
-      }
+      if (currentAudio === audio) currentAudio = null;
+      reject(new Error("Youdao TTS error"));
     };
 
-    // Play the audio
-    audio.play().catch(e => {
-      console.error("Audio play interrupted or failed", e);
-      reject(e);
-    });
+    audio.play().catch(reject);
+  });
+};
+
+const speakWithBrowser = (text: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (!window.speechSynthesis) {
+      reject(new Error("Speech Synthesis not supported"));
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US'; 
+    utterance.rate = 0.9; // Slightly slower for clarity
+
+    utterance.onend = () => resolve();
+    utterance.onerror = (e) => reject(e);
+
+    window.speechSynthesis.speak(utterance);
   });
 };
 
