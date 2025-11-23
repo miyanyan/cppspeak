@@ -56,6 +56,26 @@
         50% { transform: scaleY(1.2); opacity: 1; box-shadow: 0 0 8px #38bdf8; }
       }
 
+      /* Floating Particles */
+      .particle {
+        position: absolute;
+        bottom: -20px;
+        color: rgba(56, 189, 248, 0.03);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: bold;
+        pointer-events: none;
+        user-select: none;
+        z-index: 1; /* Above background, below content */
+        animation: float-up linear infinite;
+      }
+
+      @keyframes float-up {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.4; }
+        90% { opacity: 0.4; }
+        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+      }
+
       /* Glitch Effect for Title */
       .glitch-wrapper {
         position: relative;

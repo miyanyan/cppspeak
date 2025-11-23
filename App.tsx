@@ -37,6 +37,11 @@ const App: React.FC = () => {
     window.history.pushState({}, '', url);
   };
 
+  const handleRandomTerm = () => {
+    const random = CPP_TERMS[Math.floor(Math.random() * CPP_TERMS.length)];
+    handleSelectTerm(random);
+  };
+
   const filteredTerms = useMemo(() => {
     return CPP_TERMS.filter((term) => {
       const matchesSearch = term.word.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -49,6 +54,20 @@ const App: React.FC = () => {
 
   const categories = ['全部', ...Object.values(TermCategory)];
 
+  // Generate floating particles
+  const particles = useMemo(() => {
+    const symbols = ['::', '->', '{}', '//', '<<', '>>', '++', '--', '*', '&', '[]', '!=', '0x', '();'];
+    return Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      symbol: symbols[Math.floor(Math.random() * symbols.length)],
+      left: `${Math.random() * 100}%`,
+      animationDuration: `${15 + Math.random() * 20}s`,
+      animationDelay: `${Math.random() * 10}s`,
+      fontSize: `${10 + Math.random() * 14}px`,
+      opacity: 0.1 + Math.random() * 0.3
+    }));
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#000205]">
       
@@ -57,14 +76,32 @@ const App: React.FC = () => {
          {/* Top Gradient fade */}
          <div className="absolute inset-0 bg-gradient-to-b from-[#000205] via-transparent to-[#000205] z-10"></div>
          {/* Moving Grid */}
-         <div className="perspective-grid opacity-40"></div>
+         <div className="perspective-grid opacity-30"></div>
+         
+         {/* Floating C++ Particles */}
+         {particles.map((p) => (
+             <div 
+                key={p.id}
+                className="particle text-cyan-500"
+                style={{
+                    left: p.left,
+                    animationDuration: p.animationDuration,
+                    animationDelay: p.animationDelay,
+                    fontSize: p.fontSize,
+                    opacity: p.opacity
+                }}
+             >
+                {p.symbol}
+             </div>
+         ))}
+
          {/* Glow Orbs */}
-         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/10 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/10 rounded-full blur-[120px] mix-blend-screen"></div>
+         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/5 rounded-full blur-[120px] mix-blend-screen animate-pulse"></div>
+         <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/5 rounded-full blur-[120px] mix-blend-screen"></div>
       </div>
 
       {/* Navbar */}
-      <nav className="sticky top-0 z-40 border-b border-white/5 bg-[#000205]/80 backdrop-blur-xl">
+      <nav className="sticky top-0 z-40 border-b border-white/5 bg-[#000205]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#000205]/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => window.location.href = './'}>
              <div className="relative w-7 h-7 flex items-center justify-center rounded bg-gradient-to-br from-cyan-500 to-blue-600 shadow-[0_0_15px_rgba(6,182,212,0.5)] group-hover:shadow-[0_0_25px_rgba(6,182,212,0.8)] transition-all duration-300">
@@ -82,69 +119,88 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="flex-grow relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+      <main className="flex-grow relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-12">
         
-        {/* Hero Section - Condensed */}
-        <div className="text-center mb-12 relative">
-            <div className="inline-flex items-center px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 text-[10px] font-medium mb-6 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.2)] animate-fade-in-up">
-                <span className="relative flex h-1.5 w-1.5 mr-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500"></span>
-                </span>
-                DATABASE: {CPP_TERMS.length} TERMS ACTIVE
+        {/* Hero Section */}
+        <div className="text-center mb-16 relative">
+            
+            <div className="flex items-center justify-center gap-6 sm:gap-12 mb-6">
+                <h2 className="glitch-wrapper text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tighter leading-tight">
+                    <span className="block mb-2 text-slate-500 text-2xl sm:text-3xl font-light tracking-wide font-code">
+                    &lt;Stop saying /&gt;
+                    </span>
+                    <span className="glitch-text text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-500 drop-shadow-2xl" data-text="Deque (Di-Q)">Deque (Di-Q)</span>
+                </h2>
             </div>
             
-            <h2 className="glitch-wrapper text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-tight">
-                <span className="block mb-1 text-slate-500 text-2xl sm:text-3xl font-light tracking-normal">Stop saying</span>
-                <span className="glitch-text text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400" data-text="Deque (Di-Q)">Deque (Di-Q)</span>
-            </h2>
-            
-            <p className="text-base text-slate-400 max-w-xl mx-auto leading-relaxed font-light">
+            <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
                 Correct your C++ vocabulary pronunciation.
             </p>
         </div>
 
-        {/* Controls Section */}
-        <div className="sticky top-16 z-30 mb-8">
-            <div className="bg-[#0b1120]/95 backdrop-blur-2xl border border-white/10 rounded-xl p-1.5 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex flex-col md:flex-row gap-2 md:items-center max-w-4xl mx-auto ring-1 ring-white/5">
-                {/* Search */}
+        {/* Controls Section - Cyber Deck Style */}
+        <div className="sticky top-16 z-30 mb-10">
+            <div className="bg-[#0b1120]/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col md:flex-row gap-3 max-w-5xl mx-auto ring-1 ring-white/5 relative overflow-hidden">
+                
+                {/* Search Input */}
                 <div className="relative flex-grow group">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-4 w-4 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span className="text-cyan-500/50 font-code font-bold mr-1">&gt;</span>
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-9 pr-3 py-2 bg-transparent text-slate-200 placeholder-slate-600 focus:outline-none font-code text-xs md:text-sm"
-                        placeholder="SEARCH_TERM..."
+                        className="block w-full pl-10 pr-12 py-3 bg-[#0f172a]/50 border border-white/5 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:bg-[#0f172a] focus:border-cyan-500/30 focus:ring-1 focus:ring-cyan-500/30 font-code text-sm transition-all"
+                        placeholder="Search term (e.g. 'cout')..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    {/* Clear button if has text */}
+                    {searchTerm && (
+                        <button 
+                            onClick={() => setSearchTerm('')}
+                            className="absolute inset-y-0 right-12 flex items-center pr-2 text-slate-600 hover:text-white"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    )}
+                    
+                    {/* Random Dice Button */}
+                    <div className="absolute inset-y-0 right-1 flex items-center">
+                        <button 
+                            onClick={handleRandomTerm}
+                            className="p-2 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                            title="Random Term"
+                        >
+                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        </button>
+                    </div>
                 </div>
 
-                <div className="h-6 w-[1px] bg-white/10 hidden md:block"></div>
+                <div className="h-auto w-[1px] bg-white/10 hidden md:block mx-1"></div>
 
-                {/* Categories */}
-                <div className="flex gap-1 overflow-x-auto no-scrollbar p-1 md:p-0">
+                {/* Categories - Scrollable Pill List */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 px-1 md:py-0 items-center">
                     {categories.map((cat) => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat as any)}
-                            className={`px-3 py-1.5 rounded-md text-[10px] md:text-xs font-code font-medium whitespace-nowrap transition-all duration-200 ${
+                            className={`px-4 py-2 rounded-lg text-xs font-code font-bold whitespace-nowrap transition-all duration-300 relative overflow-hidden group/btn ${
                                 selectedCategory === cat
-                                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-                                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent'
+                                    ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.15)]'
+                                    : 'text-slate-500 bg-[#0f172a]/30 hover:text-slate-200 hover:bg-[#0f172a] border border-transparent'
                             }`}
                         >
-                            {cat}
+                            <span className="relative z-10">{cat}</span>
+                            {selectedCategory === cat && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 opacity-50 animate-pulse"></div>
+                            )}
                         </button>
                     ))}
                 </div>
             </div>
         </div>
 
-        {/* Grid - Adjusted for better readability */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
             {filteredTerms.length > 0 ? (
                 filteredTerms.map((term) => (
@@ -156,21 +212,31 @@ const App: React.FC = () => {
                 ))
             ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-20 border border-dashed border-slate-800 rounded-2xl bg-slate-900/20 backdrop-blur-sm">
+                    <div className="w-16 h-16 mb-4 text-slate-700 opacity-50">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
                     <p className="text-slate-500 font-code text-sm">ERROR: 404_TERM_NOT_FOUND</p>
                     <button 
                         onClick={() => {setSearchTerm(''); setSelectedCategory('全部');}}
                         className="mt-4 px-6 py-2 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 rounded border border-cyan-500/30 font-code text-xs transition-all"
                     >
-                        RESET
+                        RESET FILTERS
                     </button>
                 </div>
             )}
         </div>
 
         {/* Playground Section */}
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-4xl mx-auto relative mt-32">
             <div className="absolute -left-20 top-20 w-40 h-40 bg-fuchsia-500/10 rounded-full blur-[80px] pointer-events-none mix-blend-screen"></div>
             <div className="absolute -right-20 bottom-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none mix-blend-screen"></div>
+            
+            <div className="mb-6 flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <span className="text-cyan-500 font-code">~/</span> Playground
+                </h3>
+                <span className="text-xs text-slate-500 font-code border border-slate-800 px-2 py-1 rounded bg-[#0b1120]">beta_feature</span>
+            </div>
             <Playground />
         </div>
 
@@ -178,10 +244,14 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-white/5 mt-auto bg-[#000205] relative z-10">
-        <div className="max-w-7xl mx-auto py-8 px-4 flex flex-col items-center">
-            <p className="text-slate-700 text-[10px] font-code text-center">
-                CPPSPEAK_V2.0 <br/>
-                © {new Date().getFullYear()} OPEN SOURCE
+        <div className="max-w-7xl mx-auto py-12 px-4 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <div className="w-6 h-6 rounded bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-[8px] font-bold text-white">C++</div>
+                <span className="font-bold text-slate-300">CppSpeak</span>
+            </div>
+            <p className="text-slate-600 text-[10px] font-code text-center leading-relaxed">
+                ENGINEERED FOR EXCELLENCE <br/>
+                © {new Date().getFullYear()} OPEN SOURCE INITIATIVE
             </p>
         </div>
       </footer>
