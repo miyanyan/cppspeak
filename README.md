@@ -1,20 +1,107 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# CppSpeak - C++ 程序员发音指南 🗣️⚡️
 
-# Run and deploy your AI Studio app
+> **Don't let `char` be your weakness.**  
+> 专为 C++ 开发者打造的专业术语发音纠正工具。拒绝 "Di-Q" (`deque`)，告别 "Ma-lok" (`malloc`)。
 
-This contains everything you need to run your app locally.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-19.0-cyan)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![Vite](https://img.shields.io/badge/Vite-Fast-yellow)
 
-View your app in AI Studio: https://ai.studio/apps/drive/1fu8iPqhPrhKkg4lrebidSoKSB5zf7e7B
+## 📖 项目简介
 
-## Run Locally
+**CppSpeak** 是一个旨在帮助中文 C++ 开发者纠正常见技术术语发音的 Web 应用。
 
-**Prerequisites:**  Node.js
+很多资深 C++ 开发者代码写得行云流水，但在进行技术交流或面试时，往往因为某些专业术语的“中式发音”而感到尴尬或产生误解。本项目收集了高频误读词汇（如 `tuple`, `char`, `daemon`, `null` 等），提供标准的美式/英式发音、音标、错误读法对比以及代码上下文解释。
 
+## ✨ 核心功能
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+*   **准确的双语发音**：支持 **美式 (US)** 和 **英式 (UK)** 两种发音风格，一键切换。
+*   **混合 TTS 引擎**：
+    *   优先使用 **有道词典 API** 获取高质量真人/自然语音。
+    *   自动降级至 **浏览器原生 Web Speech API** 作为候补。
+*   **正误对比**：直观展示标准音标与常见的错误读音（如 "App" vs "A-P-P"）。
+*   **深度解析**：
+    *   提供术语的词源、常见误区说明。
+    *   **代码上下文**：在 C++ 代码片段中理解单词的用法。
+*   **Playground (Beta)**：内置代码编辑器风格的实验区，支持朗读整段代码或复杂声明。
+*   **沉浸式 UI**：赛博朋克/黑客风格界面，暗黑模式，流畅的粒子动画与交互体验。
+
+## 🛠️ 技术栈
+
+本项目基于现代前端技术栈构建：
+
+*   **Core**: [React 19](https://react.dev/)
+*   **Build Tool**: [Vite](https://vitejs.dev/)
+*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+*   **Animation**: CSS Keyframes, Custom Particles
+*   **Deployment**: GitHub Pages
+
+## 🚀 本地运行
+
+1.  **克隆项目**
+    ```bash
+    git clone https://github.com/miyanyan/cppspeak.git
+    cd cpp-speak
+    ```
+
+2.  **安装依赖**
+    ```bash
+    npm install
+    ```
+
+3.  **启动开发服务器**
+    ```bash
+    npm run dev
+    ```
+    打开浏览器访问 `http://localhost:5173`。
+
+4.  **构建生产版本**
+    ```bash
+    npm run build
+    ```
+
+## 🤝 如何贡献 (添加新词汇)
+
+项目的数据存储在 `data/terms` 目录下。如果你发现了一个容易读错的 C++ 术语，欢迎提交 PR！
+
+### 添加步骤：
+
+1.  在 `src/types.ts` 中确认分类（如 `KEYWORD`, `STL`, `CONCEPT`, `TOOL`）。
+2.  在 `src/data/terms/` 下找到对应的分类文件（例如 `keywords.ts`）。
+3.  按照以下格式追加对象：
+
+```typescript
+{
+  id: 'unique_id',           // 唯一标识符
+  word: 'term_name',         // 单词显示名称，如 "std::vector"
+  ipa: '...',                // 通用音标
+  ipaUS: '...',              // 美式音标 (可选)
+  ipaUK: '...',              // 英式音标 (可选)
+  simplePhonetic: '...',     // 简单的拟声读法，如 "See-Out"
+  category: TermCategory.STL,// 分类
+  description: '...',        // 简短描述
+  commonError: '...',        // 常见错误读法
+  detailedExplanation: '...',// 详细解释，词源等
+  codeSnippet: '...'         // C++ 代码示例
+}
+```
+
+## 📂 项目结构
+
+```
+src/
+├── components/      # React 组件 (TermCard, Modal, Playground...)
+├── data/            # 词汇数据库
+│   ├── terms/       # 按分类存储的术语源文件
+│   └── index.ts     # 数据聚合出口
+├── services/        # 业务逻辑 (TTS 语音服务)
+├── App.tsx          # 主应用入口
+└── main.tsx         # 渲染入口
+```
+
+## 📝 License
+
+MIT License. 
+Designed for the community, by the community.
