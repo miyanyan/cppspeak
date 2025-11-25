@@ -78,5 +78,83 @@ export const KEYWORD_TERMS: Term[] = [
     commonError: 'Ma-lo-k (马洛克)',
     detailedExplanation: 'Memory Allocation 的缩写。重音在第一个音节 Mal。第二个音节 loc 读作 lock。',
     codeSnippet: 'void* p = malloc(1024);\nfree(p);'
+  },
+  {
+    id: 'bool',
+    word: 'bool',
+    ipa: 'buːl',
+    ipaUS: 'buːl',
+    ipaUK: 'buːl',
+    simplePhonetic: 'Bool',
+    category: TermCategory.KEYWORD,
+    description: '布尔类型。True 或 False。',
+    commonError: 'Bo-Le (博-乐) / Bu (布)',
+    detailedExplanation: '源自数学家 George Boole。发音同 "Cool", "Pool"。尾音 l 需要顶上颚。不要读成双音节 "Bo-Le" 或短音 "Bu"。',
+    codeSnippet: 'bool isActive = true;'
+  },
+  {
+    id: 'enum',
+    word: 'enum',
+    ipa: 'ˈiːnʌm',
+    ipaUS: 'ˈiːnʌm',
+    ipaUK: 'ɪˈnjuːm',
+    simplePhonetic: 'Ee-num',
+    category: TermCategory.KEYWORD,
+    description: '枚举类型。Enumeration 的缩写。',
+    commonError: 'E-Num (E-牛-wm)',
+    detailedExplanation: 'Enumeration 的缩写。通常读作 Ee-num。英式发音也读 In-you-m。不要逐字母读。',
+    codeSnippet: 'enum Color { RED, BLUE };'
+  },
+  {
+    id: 'volatile',
+    word: 'volatile',
+    ipa: 'ˈvɑːlətl',
+    ipaUS: 'ˈvɑːlətl',
+    ipaUK: 'ˈvɒlətaɪl',
+    simplePhonetic: 'Vol-a-tl',
+    category: TermCategory.KEYWORD,
+    description: '易变的。禁止编译器优化。',
+    commonError: 'Vo-la-tile (沃-la-tai-le)',
+    detailedExplanation: '美式发音重音在第一音节，tile 弱读为 /tl/，类似 "Bottle"。英式发音 tile 读作 /taɪl/。',
+    codeSnippet: 'volatile int timer_flag;'
+  },
+  {
+    id: 'explicit',
+    word: 'explicit',
+    ipa: 'ɪkˈsplɪsɪt',
+    ipaUS: 'ɪkˈsplɪsɪt',
+    ipaUK: 'ɪkˈsplɪsɪt',
+    simplePhonetic: 'Ik-SPLIS-it',
+    category: TermCategory.KEYWORD,
+    description: '显式的。防止隐式类型转换。',
+    commonError: 'Ex-pli-cit (重音错误)',
+    detailedExplanation: '重音在第二个音节 SPLIS 上。不要重读开头的 Ex。',
+    codeSnippet: 'explicit MyClass(int x);'
+  },
+  {
+    id: 'constexpr',
+    word: 'constexpr',
+    ipa: 'kɒnst ɛkspr',
+    ipaUS: 'kɑnst ɛkspr',
+    ipaUK: 'kɒnst ɛkspr',
+    simplePhonetic: 'Const-Ex-Per',
+    category: TermCategory.KEYWORD,
+    description: '常量表达式。编译时常量。',
+    commonError: 'Const-Ex-P-R (逐字母)',
+    detailedExplanation: '通常读作 Const + Expr (Expression 的缩写)。Expr 读作 Ex-per 或者 Ex-pruh。',
+    codeSnippet: 'constexpr int max = 100;'
+  },
+  {
+    id: 'throw',
+    word: 'throw',
+    ipa: 'θroʊ',
+    ipaUS: 'θroʊ',
+    ipaUK: 'θrəʊ',
+    simplePhonetic: 'Throw',
+    category: TermCategory.KEYWORD,
+    description: '抛出异常。',
+    commonError: 'Srow (斯-肉)',
+    detailedExplanation: 'Th 咬舌音是关键。不要读成 S 音 (Srow)。',
+    codeSnippet: 'if (error) throw exception;'
   }
 ];

@@ -104,5 +104,70 @@ export const CONCEPT_TERMS: Term[] = [
     commonError: 'A-Jax (阿贾克斯)',
     detailedExplanation: '虽然是足球队名阿贾克斯的拼写，但在技术圈读作 /eɪdʒæks/。A 发字母音 /ei/。',
     codeSnippet: '$.ajax({ url: "/api" });\n// Web request'
+  },
+  {
+    id: 'virtual',
+    word: 'virtual',
+    ipa: 'ˈvɜːrtʃuəl',
+    ipaUS: 'ˈvɜːrtʃuəl',
+    ipaUK: 'ˈvɜːtʃʊəl',
+    simplePhonetic: 'Ver-chul',
+    category: TermCategory.CONCEPT,
+    description: '虚函数关键字，用于实现多态。',
+    commonError: 'Vir-tua (维-tu-a)',
+    detailedExplanation: 'Virtual 实现运行时多态。发音重点是 ur 发音 /ɜːr/，类似 "Bird"。tua 部分弱读为 /tʃuəl/。不要读成 "Vir-tua"。',
+    codeSnippet: 'virtual void draw() = 0;\n// Pure virtual function'
+  },
+  {
+    id: 'parameter',
+    word: 'parameter',
+    ipa: 'pəˈræmɪtər',
+    ipaUS: 'pəˈræmɪtər',
+    ipaUK: 'pəˈræmɪtə',
+    simplePhonetic: 'Pa-RAM-i-ter',
+    category: TermCategory.CONCEPT,
+    description: '参数。函数定义中声明的变量。',
+    commonError: 'Pa-ra-me-ter (平调/重音错误)',
+    detailedExplanation: '重音在第二个音节 RAM 上。不要读成平调的 "Pa-ra-me-ter" 或者把重音放在 first syllable。',
+    codeSnippet: 'void func(int parameter) {\n    // ...\n}'
+  },
+  {
+    id: 'syntax',
+    word: 'syntax',
+    ipa: 'ˈsɪntæks',
+    ipaUS: 'ˈsɪntæks',
+    ipaUK: 'ˈsɪntæks',
+    simplePhonetic: 'Sin-taks',
+    category: TermCategory.CONCEPT,
+    description: '语法。编程语言的结构规则。',
+    commonError: 'Sin-tax (重音/尾音错误)',
+    detailedExplanation: '重音在第一个音节。x 发 /ks/ 的音。',
+    codeSnippet: '// Syntax Error:\nint x = ;'
+  },
+  {
+    id: 'generic',
+    word: 'generic',
+    ipa: 'dʒəˈnɛrɪk',
+    ipaUS: 'dʒəˈnɛrɪk',
+    ipaUK: 'dʒɪˈnɛrɪk',
+    simplePhonetic: 'Juh-NER-ik',
+    category: TermCategory.CONCEPT,
+    description: '泛型。如泛型编程。',
+    commonError: 'Ge-ne-ric (Ge 发硬音)',
+    detailedExplanation: 'G 发软音 /dʒ/ (如 Job)。重音在第二个音节 NER 上。',
+    codeSnippet: '// Generic Programming\ntemplate<typename T> ...'
+  },
+  {
+    id: 'instantiate',
+    word: 'instantiate',
+    ipa: 'ɪnˈstænʃieɪt',
+    ipaUS: 'ɪnˈstænʃieɪt',
+    ipaUK: 'ɪnˈstænʃɪeɪt',
+    simplePhonetic: 'In-STAN-she-ate',
+    category: TermCategory.CONCEPT,
+    description: '实例化。创建类的对象。',
+    commonError: 'In-stan-ti-ate (ti 读作 ti)',
+    detailedExplanation: '中间的 ti 发音为 /ʃi/ (she)。重音在 stan 上。',
+    codeSnippet: 'MyClass obj;\n// Instantiated obj'
   }
 ];
