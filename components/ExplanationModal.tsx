@@ -41,6 +41,12 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
       setTimeout(() => setCopied(false), 2000);
   }
 
+  const handleYouGlish = () => {
+      if(!term) return;
+      const query = term.word.replace(/::/g, ' ');
+      window.open(`https://youglish.com/pronounce/${encodeURIComponent(query)}/english`, '_blank');
+  }
+
   if (!term) return null;
 
   return (
@@ -88,6 +94,13 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ term, onClose }) =>
                 </div>
             </div>
             <div className="flex items-center gap-1">
+                <button
+                    onClick={handleYouGlish}
+                    className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-white/5"
+                    title="Watch on YouGlish"
+                >
+                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                </button>
                 <button
                     onClick={handleCopyLink}
                     className="text-slate-400 hover:text-cyan-400 transition-colors p-2 rounded-lg hover:bg-white/5 group-copy"

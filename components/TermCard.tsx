@@ -40,6 +40,13 @@ const TermCard: React.FC<TermCardProps> = ({ term, onSelect }) => {
     }
   };
 
+  const openYouGlish = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Clean up term for better search results (e.g. "std::vector" -> "std vector")
+    const query = term.word.replace(/::/g, ' ');
+    window.open(`https://youglish.com/pronounce/${encodeURIComponent(query)}/english`, '_blank');
+  };
+
   const ipaUS = term.ipaUS || term.ipa;
   const ipaUK = term.ipaUK || term.ipa;
 
@@ -91,17 +98,9 @@ const TermCard: React.FC<TermCardProps> = ({ term, onSelect }) => {
                       : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-cyan-300 hover:border-cyan-500/30'
                   }`}
                 >
-                   <span className="text-[10px] font-bold bg-white/5 px-1.5 rounded text-slate-300 group-hover/us:text-white transition-colors">US</span>
+                   <span className="text-[10px] font-bold bg-white/5 px-1.5 rounded text-slate-300 group-hover/us:text-white transition-colors">美</span>
                    <span className="font-sans text-[11px] font-medium tracking-wide opacity-80 hidden sm:inline">/{ipaUS}/</span>
-                   {playingAccent === 'US' ? (
-                     <div className="flex items-end gap-[1px] h-2.5 justify-center w-2.5">
-                        <div className="w-[2px] bg-cyan-400 animate-[wave_0.6s_infinite] h-full"></div>
-                        <div className="w-[2px] bg-cyan-400 animate-[wave_0.6s_infinite_0.1s] h-[60%]"></div>
-                        <div className="w-[2px] bg-cyan-400 animate-[wave_0.6s_infinite_0.2s] h-[80%]"></div>
-                     </div>
-                   ) : (
-                     <svg className="w-3 h-3 opacity-50 group-hover/us:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                   )}
+                   <svg className={`w-3 h-3 transition-colors ${playingAccent === 'US' ? 'text-cyan-400' : 'opacity-50 group-hover/us:opacity-100'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </button>
 
                 {/* UK Badge */}
@@ -113,17 +112,9 @@ const TermCard: React.FC<TermCardProps> = ({ term, onSelect }) => {
                       : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-indigo-300 hover:border-indigo-500/30'
                   }`}
                 >
-                   <span className="text-[10px] font-bold bg-white/5 px-1.5 rounded text-slate-300 group-hover/uk:text-white transition-colors">UK</span>
+                   <span className="text-[10px] font-bold bg-white/5 px-1.5 rounded text-slate-300 group-hover/uk:text-white transition-colors">英</span>
                    <span className="font-sans text-[11px] font-medium tracking-wide opacity-80 hidden sm:inline">/{ipaUK}/</span>
-                   {playingAccent === 'UK' ? (
-                     <div className="flex items-end gap-[1px] h-2.5 justify-center w-2.5">
-                        <div className="w-[2px] bg-indigo-400 animate-[wave_0.6s_infinite] h-full"></div>
-                        <div className="w-[2px] bg-indigo-400 animate-[wave_0.6s_infinite_0.1s] h-[60%]"></div>
-                        <div className="w-[2px] bg-indigo-400 animate-[wave_0.6s_infinite_0.2s] h-[80%]"></div>
-                     </div>
-                   ) : (
-                     <svg className="w-3 h-3 opacity-50 group-hover/uk:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                   )}
+                   <svg className={`w-3 h-3 transition-colors ${playingAccent === 'UK' ? 'text-indigo-400' : 'opacity-50 group-hover/uk:opacity-100'}`} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </button>
              </div>
           </div>
@@ -164,15 +155,27 @@ const TermCard: React.FC<TermCardProps> = ({ term, onSelect }) => {
              </div>
           </div>
           
-          {/* Footer: Description */}
-          <div className="pt-3 flex items-start justify-between gap-2 border-t border-white/5">
-              <span className="text-xs text-slate-400 font-medium leading-relaxed line-clamp-2">
+          {/* Footer: Description & Actions */}
+          <div className="pt-3 flex items-center justify-between gap-2 border-t border-white/5 mt-auto">
+              <span className="text-xs text-slate-400 font-medium leading-relaxed line-clamp-1 flex-grow">
                 {term.description}
               </span>
-              <div className="h-6 w-6 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-slate-600 transition-all flex-shrink-0">
-                  <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+              
+              <div className="flex items-center gap-2">
+                {/* YouGlish Button */}
+                <button
+                    onClick={openYouGlish}
+                    className="h-6 w-6 rounded-full flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                    title="Watch on YouGlish"
+                >
+                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                </button>
+
+                <div className="h-6 w-6 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-slate-600 transition-all flex-shrink-0">
+                    <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
               </div>
           </div>
         </div>
