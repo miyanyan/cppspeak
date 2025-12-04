@@ -75,7 +75,7 @@
 ```typescript
 {
   id: 'unique_id',           // 唯一标识符
-  word: 'term_name',         // 单词显示名称，如 "std::vector"
+  word: 'term_name',         // 单词显示名称，如 "vector"
   ipa: '...',                // 通用音标
   ipaUS: '...',              // 美式音标 (可选)
   ipaUK: '...',              // 英式音标 (可选)
