@@ -166,12 +166,16 @@ const App: React.FC = () => {
                     
                     {/* Random Dice Button */}
                     <div className="absolute inset-y-0 right-1 flex items-center">
-                        <button 
+                        <button
                             onClick={handleRandomTerm}
-                            className="p-2 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                            className="p-2 text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-all duration-200 group"
                             title="Random Term"
                         >
-                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                           <svg className="w-5 h-5 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5v-9z" />
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v18" />
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7.5l9 4.5 9-4.5" />
+                           </svg>
                         </button>
                     </div>
                 </div>
