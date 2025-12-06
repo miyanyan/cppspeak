@@ -22,6 +22,13 @@ export const playPronunciation = async (
     currentAudio = null;
   }
 
+  // Special handling for Asio - use the correct pronunciation "AY-zi-oh"
+  if (text.toLowerCase() === 'asio') {
+    // Break into syllables with proper emphasis
+    await speakWithBrowser('AYzioh');
+    return;
+  }
+
   // DIRECT STRATEGY:
   // 1. If text contains spaces, treat it as a sentence or code snippet -> Use Browser Native (More reliable for context).
   // 2. If text is a single block (like "App" or "std::deque"), try Youdao first.
