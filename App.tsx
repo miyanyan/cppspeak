@@ -9,6 +9,8 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<TermCategory | '全部'>('全部');
   const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -42,14 +44,36 @@ const App: React.FC = () => {
     handleSelectTerm(random);
   };
 
-  const filteredTerms = useMemo(() => {
+  const filteredTermsData = useMemo(() => {
     return CPP_TERMS.filter((term) => {
-      const matchesSearch = term.word.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch = term.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             term.commonError.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             term.description.includes(searchTerm);
       const matchesCategory = selectedCategory === '全部' || term.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
+  }, [searchTerm, selectedCategory]);
+
+  const totalPages = Math.ceil(filteredTermsData.length / ITEMS_PER_PAGE);
+
+  const filteredTerms = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredTermsData.slice(startIndex, endIndex);
+  }, [filteredTermsData, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to pagination controls when changing page
+    const paginationElement = document.getElementById('pagination-controls');
+    if (paginationElement) {
+      paginationElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  // Reset to page 1 when search or category changes
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
 
   const categories = ['全部', ...Object.values(TermCategory)];
@@ -207,20 +231,100 @@ const App: React.FC = () => {
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
             {filteredTerms.length > 0 ? (
-                filteredTerms.map((term) => (
-                    <TermCard 
-                        key={term.id} 
-                        term={term} 
-                        onSelect={handleSelectTerm} 
-                    />
-                ))
+                <>
+                    {filteredTerms.map((term: Term) => (
+                        <TermCard
+                            key={term.id}
+                            term={term}
+                            onSelect={handleSelectTerm}
+                        />
+                    ))}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div id="pagination-controls" className="col-span-full flex flex-col items-center gap-4 mt-12">
+                            {/* Page Info */}
+                            <div className="text-slate-500 font-code text-xs">
+                                Page {currentPage} of {totalPages} ({filteredTermsData.length} terms)
+                            </div>
+
+                            {/* Pagination Controls */}
+                            <div className="flex items-center gap-2">
+                                {/* Previous Button */}
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`px-3 py-2 rounded-lg font-code text-xs transition-all ${
+                                        currentPage === 1
+                                            ? 'text-slate-700 bg-slate-900/50 cursor-not-allowed'
+                                            : 'text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/50'
+                                    }`}
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+
+                                {/* Page Numbers */}
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                                        // Show ellipsis for many pages
+                                        if (
+                                            totalPages > 7 &&
+                                            page !== 1 &&
+                                            page !== totalPages &&
+                                            Math.abs(page - currentPage) > 1
+                                        ) {
+                                            return null;
+                                        }
+
+                                        const showEllipsis =
+                                            (page === 2 && currentPage > 4) ||
+                                            (page === totalPages - 1 && currentPage < totalPages - 3);
+
+                                        return showEllipsis ? (
+                                            <span key={`ellipsis-${page}`} className="px-2 text-slate-600">...</span>
+                                        ) : (
+                                            <button
+                                                key={page}
+                                                onClick={() => handlePageChange(page)}
+                                                className={`px-3 py-2 rounded-lg font-code text-xs transition-all ${
+                                                    currentPage === page
+                                                        ? 'text-white bg-cyan-500 border border-cyan-500'
+                                                        : 'text-slate-400 bg-slate-900/50 hover:bg-cyan-500/10 hover:text-cyan-400 border border-slate-700/50 hover:border-cyan-500/30'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Next Button */}
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`px-3 py-2 rounded-lg font-code text-xs transition-all ${
+                                        currentPage === totalPages
+                                            ? 'text-slate-700 bg-slate-900/50 cursor-not-allowed'
+                                            : 'text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400/50'
+                                    }`}
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </>
             ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-20 border border-dashed border-slate-800 rounded-2xl bg-slate-900/20 backdrop-blur-sm">
                     <div className="w-16 h-16 mb-4 text-slate-700 opacity-50">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
                     <p className="text-slate-500 font-code text-sm">ERROR: 404_TERM_NOT_FOUND</p>
-                    <button 
+                    <button
                         onClick={() => {setSearchTerm(''); setSelectedCategory('全部');}}
                         className="mt-4 px-6 py-2 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 rounded border border-cyan-500/30 font-code text-xs transition-all"
                     >
