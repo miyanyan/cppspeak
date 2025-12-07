@@ -16,7 +16,6 @@ export interface Term {
 export enum TermCategory {
   KEYWORD = '关键字',
   LIB = 'STL/库',
-  PEOPLE = '人物',
   CONCEPT = '概念',
   TOOL = '工具/环境'
 }
