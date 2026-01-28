@@ -169,5 +169,18 @@ export const CONCEPT_TERMS: Term[] = [
     commonError: 'In-stan-ti-ate (ti 读作 ti)',
     detailedExplanation: '中间的 ti 发音为 /ʃi/ (she)。重音在 stan 上。',
     codeSnippet: 'MyClass obj;\n// Instantiated obj'
+  },
+  {
+    id: 'sentinel',
+    word: 'sentinel',
+    ipa: 'ˈsentɪnl',
+    ipaUS: 'ˈsentɪnl',
+    ipaUK: 'ˈsentɪnl',
+    simplePhonetic: 'SEN-ti-nl',
+    category: TermCategory.CONCEPT,
+    description: '哨兵。用于标记边界或结束的特殊值。',
+    commonError: 'Sen-ti-NEL (重音错误)',
+    detailedExplanation: '重音在第一个音节 SEN。ti 发轻音 /tɪ/，nel 弱读为 /nl/。在 C++ 中常用于哨兵迭代器（C++20）、哨兵值等场景，用于标记序列结束而不需要具体位置。',
+    codeSnippet: '// C++20 Sentinel iterator\nauto end = std::default_sentinel;\n// Marks end of range'
   }
 ];
